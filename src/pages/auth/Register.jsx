@@ -1,65 +1,78 @@
-import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { FaUser, FaEnvelope, FaLock, FaPhone } from "react-icons/fa";
 
-const Register = () => {
-    const [full_name, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const { register } = useAuth();
-    const navigate = useNavigate();
+export default function Register() {
+  return (
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-5">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-[420px]">
+        <h1 className="text-3xl font-bold text-center mb-2">
+          Create Account
+        </h1>
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await register(full_name, email, password);
-            navigate('/dashboard');
-        } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed');
-        }
-    };
+        <p className="text-center text-gray-500 mb-6">
+          Register to continue
+        </p>
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-md w-96">
-                <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
-                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Full Name"
-                        className="w-full p-2 border rounded mb-4"
-                        value={full_name}
-                        onChange={(e) => setFullName(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        className="w-full p-2 border rounded mb-4"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="w-full p-2 border rounded mb-4"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    <button type="submit" className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
-                        Register
-                    </button>
-                </form>
-                <p className="mt-4 text-center">
-                    Already have an account? <Link to="/login" className="text-blue-500">Login</Link>
-                </p>
-            </div>
+        {/* Full Name */}
+        <div className="relative mb-4">
+          <FaUser className="absolute left-4 top-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="w-full border rounded-lg py-3 pl-12 pr-4 outline-none focus:border-blue-500"
+          />
         </div>
-    );
-};
 
-export default Register;
+        {/* Email */}
+        <div className="relative mb-4">
+          <FaEnvelope className="absolute left-4 top-4 text-gray-400" />
+          <input
+            type="email"
+            placeholder="Email Address"
+            className="w-full border rounded-lg py-3 pl-12 pr-4 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        {/* Phone */}
+        <div className="relative mb-4">
+          <FaPhone className="absolute left-4 top-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Phone Number"
+            className="w-full border rounded-lg py-3 pl-12 pr-4 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        {/* Password */}
+        <div className="relative mb-4">
+          <FaLock className="absolute left-4 top-4 text-gray-400" />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full border rounded-lg py-3 pl-12 pr-4 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        {/* Confirm Password */}
+        <div className="relative mb-6">
+          <FaLock className="absolute left-4 top-4 text-gray-400" />
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            className="w-full border rounded-lg py-3 pl-12 pr-4 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+          Register
+        </button>
+
+        <p className="text-center text-gray-500 mt-5">
+          Already have an account?
+          <span className="text-blue-600 cursor-pointer ml-1">
+            Login here
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+}

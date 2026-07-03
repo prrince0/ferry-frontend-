@@ -28,7 +28,7 @@ export default function Navbar() {
             Schedule
           </Link>
 
-          <Link to="/booking" className="hover:text-blue-600 transition">
+          <Link to="/MyBookings" className="hover:text-blue-600 transition">
             Book Ticket
           </Link>
 
@@ -44,7 +44,7 @@ export default function Navbar() {
           {token && (
             <>
               <Link
-                to="/my-bookings"
+                to="/MyBookings"
                 className="hover:text-blue-600 transition"
               >
                 My Bookings

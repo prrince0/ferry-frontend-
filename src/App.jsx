@@ -5,6 +5,8 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Home from "./pages/home";
 import Profile from "./pages/profile/Profile";
 import AdminLogin from "./pages/admin/AdminLogin";
+import Schedule from "./pages/Schedule";
+import MyBookings from "./pages/MyBookings";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
          <Route path="/dashboard" element={<Dashboard />} />
          <Route path="/home" element={<Home />} />
          <Route path="/profile" element={<Profile />} />
+         <Route path="/schedule" element={<Schedule />} />
+          <Route path="/MyBookings" element={<MyBookings />} />
       </Routes>
     </BrowserRouter>
   );

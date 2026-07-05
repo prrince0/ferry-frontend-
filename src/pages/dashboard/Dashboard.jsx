@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   FaShip,
   FaRoute,
@@ -46,9 +47,11 @@ export default function Dashboard() {
         </h1>
 
         <ul className="space-y-4">
-          <li className="bg-blue-600 p-3 rounded-lg cursor-pointer">
-            Dashboard
+          <Link to="/admin/ManageSchedules">
+          <li className="hover:bg-slate-800 p-3 rounded-lg cursor-pointer transition">
+            Manage Schedules
           </li>
+          </Link>
           <li className="hover:bg-slate-800 p-3 rounded-lg cursor-pointer">
             Ferries
           </li>

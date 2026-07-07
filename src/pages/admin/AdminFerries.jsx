@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import {
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaSearch,
-} from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/API";
 
-export default function ManageSchedules() {
+export default function AdminFerries() {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchSchedules();
+  }, []);
 
   const fetchSchedules = async () => {
     try {
@@ -23,32 +25,20 @@ export default function ManageSchedules() {
     }
   };
 
-  useEffect(() => {
-    fetchSchedules();
-  }, []);
-
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Delete this schedule?"
-    );
-
-    if (!confirmDelete) return;
+    if (!window.confirm("Delete this schedule?")) return;
 
     try {
       await api.delete(`/schedules/${id}`);
 
-      setSchedules(
-        schedules.filter(
-          (schedule) => schedule.id !== id
-        )
+      setSchedules((prev) =>
+        prev.filter((schedule) => schedule.id !== id)
       );
 
       alert("Schedule deleted successfully");
     } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Delete failed"
-      );
+      console.error(error);
+      alert(error.response?.data?.message || "Delete failed");
     }
   };
 
@@ -58,7 +48,7 @@ export default function ManageSchedules() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-4xl font-bold">
-            Manage Schedules
+           Ferry management
           </h1>
 
           <p className="text-gray-500 mt-2">
@@ -66,7 +56,10 @@ export default function ManageSchedules() {
           </p>
         </div>
 
-        <button className="bg-blue-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-blue-700 transition">
+        <button
+          onClick={() => navigate("/admin/schedules/add")}
+          className="bg-blue-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-blue-700 transition"
+        >
           <FaPlus />
           Add Schedule
         </button>
@@ -79,24 +72,24 @@ export default function ManageSchedules() {
 
           <input
             type="text"
-            placeholder="Search by ferry name or route..."
+            placeholder="Search schedules..."
             className="w-full border rounded-xl py-3 pl-12 pr-4 outline-none focus:border-blue-500"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow overflow-hidden">
-        <table className="w-full">
+      <div className="bg-white rounded-2xl shadow overflow-x-auto">
+        <table className="w-full text-center">
           <thead className="bg-blue-600 text-white">
             <tr>
               <th className="py-4">ID</th>
-              <th>Ferry</th>
-              <th>Route</th>
+              <th>Ferry ID</th>
+              <th>Origin</th>
+              <th>Destination</th>
               <th>Departure</th>
               <th>Arrival</th>
-              <th>Date</th>
-              <th>Capacity</th>
+              <th>Base Price</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -105,19 +98,13 @@ export default function ManageSchedules() {
           <tbody>
             {loading ? (
               <tr>
-                <td
-                  colSpan="9"
-                  className="text-center py-10"
-                >
+                <td colSpan="9" className="py-10">
                   Loading...
                 </td>
               </tr>
             ) : schedules.length === 0 ? (
               <tr>
-                <td
-                  colSpan="9"
-                  className="text-center py-10 text-gray-500"
-                >
+                <td colSpan="9" className="py-10 text-gray-500">
                   No schedules found
                 </td>
               </tr>
@@ -127,44 +114,55 @@ export default function ManageSchedules() {
                   key={schedule.id}
                   className="border-b hover:bg-gray-50"
                 >
-                  <td className="py-4 text-center">
-                    {schedule.id}
+                  <td className="py-4">{schedule.id}</td>
+
+                  <td>{schedule.ferry_id}</td>
+
+                  <td>{schedule.origin}</td>
+
+                  <td>{schedule.destination}</td>
+
+                  <td>
+                    {new Date(
+                      schedule.departure_time
+                    ).toLocaleString()}
                   </td>
 
-                  <td className="text-center">
-                    {schedule.ferry_name}
+                  <td>
+                    {new Date(
+                      schedule.arrival_time
+                    ).toLocaleString()}
                   </td>
 
-                  <td className="text-center">
-                    {schedule.source} →{" "}
-                    {schedule.destination}
-                  </td>
+                  <td>₹ {schedule.base_price}</td>
 
-                  <td className="text-center">
-                    {schedule.departure_time}
-                  </td>
-
-                  <td className="text-center">
-                    {schedule.arrival_time}
-                  </td>
-
-                  <td className="text-center">
-                    {schedule.date}
-                  </td>
-
-                  <td className="text-center">
-                    {schedule.capacity}
-                  </td>
-
-                  <td className="text-center">
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                  <td>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm text-white
+                      ${
+                        schedule.status === "scheduled"
+                          ? "bg-green-500"
+                          : schedule.status === "delayed"
+                          ? "bg-yellow-500"
+                          : schedule.status === "cancelled"
+                          ? "bg-red-500"
+                          : "bg-blue-500"
+                      }`}
+                    >
                       {schedule.status}
                     </span>
                   </td>
 
-                  <td className="text-center">
+                  <td>
                     <div className="flex justify-center gap-3">
-                      <button className="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600">
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/admin/schedules/edit/${schedule.id}`
+                          )
+                        }
+                        className="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600"
+                      >
                         <FaEdit />
                       </button>
 

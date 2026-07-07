@@ -47,9 +47,9 @@ export default function Dashboard() {
         </h1>
 
         <ul className="space-y-4">
-          <Link to="/admin/ManageSchedules">
+          <Link to="/admin/AdminFerries">
           <li className="hover:bg-slate-800 p-3 rounded-lg cursor-pointer transition">
-            Manage Schedules
+            Ferry Management
           </li>
           </Link>
           <li className="hover:bg-slate-800 p-3 rounded-lg cursor-pointer">
@@ -59,7 +59,7 @@ export default function Dashboard() {
             Routes
           </li>
           <li className="hover:bg-slate-800 p-3 rounded-lg cursor-pointer">
-            Schedules
+            Schedules management
           </li>
           <li className="hover:bg-slate-800 p-3 rounded-lg cursor-pointer">
             Bookings

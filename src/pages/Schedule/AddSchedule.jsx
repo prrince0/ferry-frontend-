@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/API";
 
@@ -19,24 +19,24 @@ export default function AddSchedule() {
   });
 
   useEffect(() => {
-    getFerries();
+    loadFerries();
   }, []);
 
-  const getFerries = async () => {
+  const loadFerries = async () => {
     try {
-      const res = await api.get("/ferries");
+        const res = await api.get("/ferries/my-ferries");
       setFerries(res.data);
-    } catch (error) {
-      console.error(error);
-      alert("Failed to load ferries");
+    } catch (err) {
+      console.error(err);
+      alert("Unable to load your ferries.");
     }
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -47,15 +47,25 @@ export default function AddSchedule() {
 
       await api.post("/schedules", formData);
 
-      alert("Schedule Added Successfully");
+      alert("Schedule created successfully!");
 
-      navigate("/admin/schedules");
-    } catch (error) {
-      console.error(error);
+      setFormData({
+        ferry_id: "",
+        origin: "",
+        destination: "",
+        departure_time: "",
+        arrival_time: "",
+        base_price: "",
+        status: "scheduled",
+      });
+
+      navigate("/admin/ManageSchedule");
+    } catch (err) {
+      console.error(err);
 
       alert(
-        error.response?.data?.message ||
-          "Failed to create schedule"
+        err.response?.data?.message ||
+          "Unable to create schedule."
       );
     } finally {
       setLoading(false);
@@ -63,46 +73,60 @@ export default function AddSchedule() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center py-10">
-      <div className="bg-white shadow-xl rounded-2xl w-full max-w-3xl p-8">
+    <div className="min-h-screen bg-gray-100 py-10 px-5">
 
-        <h1 className="text-3xl font-bold mb-8">
-          Add Ferry Schedule
-        </h1>
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg">
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="bg-blue-600 text-white rounded-t-2xl p-6">
+          <h1 className="text-3xl font-bold">
+            Add Schedule
+          </h1>
 
-          {/* Ferry ID */}
-          <div>
-            <label className="block font-semibold mb-2">
-              Select Ferry
+          <p className="mt-2 text-blue-100">
+            Create a new ferry schedule.
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-2 gap-6 p-8"
+        >
+
+          <div className="col-span-2">
+            <label className="font-semibold block mb-2">
+              Ferry
             </label>
 
             <select
               name="ferry_id"
               value={formData.ferry_id}
               onChange={handleChange}
-              required
               className="w-full border rounded-lg p-3"
+              required
             >
               <option value="">
                 Select Ferry
               </option>
 
-              {ferries.map((ferry) => (
-                <option
-                  key={ferry.id}
-                  value={ferry.id}
-                >
-                  {ferry.id} - {ferry.name}
+              {ferries.length > 0 ? (
+                ferries.map((ferry) => (
+                  <option
+                    key={ferry.id}
+                    value={ferry.id}
+                  >
+                    {ferry.id} - {ferry.name}
+                  </option>
+                ))
+              ) : (
+                <option disabled>
+                  No ferries available
                 </option>
-              ))}
+              )}
             </select>
           </div>
 
-          {/* Origin */}
           <div>
-            <label className="block font-semibold mb-2">
+            <label className="font-semibold block mb-2">
               Origin
             </label>
 
@@ -111,14 +135,13 @@ export default function AddSchedule() {
               name="origin"
               value={formData.origin}
               onChange={handleChange}
-              required
               className="w-full border rounded-lg p-3"
+              required
             />
           </div>
 
-          {/* Destination */}
           <div>
-            <label className="block font-semibold mb-2">
+            <label className="font-semibold block mb-2">
               Destination
             </label>
 
@@ -127,14 +150,13 @@ export default function AddSchedule() {
               name="destination"
               value={formData.destination}
               onChange={handleChange}
-              required
               className="w-full border rounded-lg p-3"
+              required
             />
           </div>
 
-          {/* Departure */}
           <div>
-            <label className="block font-semibold mb-2">
+            <label className="font-semibold block mb-2">
               Departure Time
             </label>
 
@@ -143,14 +165,13 @@ export default function AddSchedule() {
               name="departure_time"
               value={formData.departure_time}
               onChange={handleChange}
-              required
               className="w-full border rounded-lg p-3"
+              required
             />
           </div>
 
-          {/* Arrival */}
           <div>
-            <label className="block font-semibold mb-2">
+            <label className="font-semibold block mb-2">
               Arrival Time
             </label>
 
@@ -159,15 +180,14 @@ export default function AddSchedule() {
               name="arrival_time"
               value={formData.arrival_time}
               onChange={handleChange}
-              required
               className="w-full border rounded-lg p-3"
+              required
             />
           </div>
 
-          {/* Base Price */}
           <div>
-            <label className="block font-semibold mb-2">
-              Base Price
+            <label className="font-semibold block mb-2">
+              Base Price (₹)
             </label>
 
             <input
@@ -175,14 +195,13 @@ export default function AddSchedule() {
               name="base_price"
               value={formData.base_price}
               onChange={handleChange}
-              required
               className="w-full border rounded-lg p-3"
+              required
             />
           </div>
 
-          {/* Status */}
           <div>
-            <label className="block font-semibold mb-2">
+            <label className="font-semibold block mb-2">
               Status
             </label>
 
@@ -210,26 +229,22 @@ export default function AddSchedule() {
             </select>
           </div>
 
-          <div className="flex gap-4 mt-6">
+          <div className="col-span-2 flex justify-end gap-4 mt-4">
+
+            <button
+              type="button"
+              onClick={() => navigate("/admin/schedules")}
+              className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600"
+            >
+              Cancel
+            </button>
 
             <button
               type="submit"
               disabled={loading}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
             >
-              {loading
-                ? "Saving..."
-                : "Create Schedule"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/admin/schedules")
-              }
-              className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600"
-            >
-              Cancel
+              {loading ? "Creating..." : "Create Schedule"}
             </button>
 
           </div>
@@ -237,6 +252,7 @@ export default function AddSchedule() {
         </form>
 
       </div>
+
     </div>
   );
 }

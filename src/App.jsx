@@ -8,7 +8,11 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import Schedule from "./pages/Schedule";
 import MyBookings from "./pages/MyBookings";
 import AdminFerries from "./pages/admin/AdminFerries";
-import AddSchedule from "./pages/admin/AddSchedule";
+import ManageSchedule from "./pages/admin/ManageSchedule";
+import AddSchedule from "./pages/Schedule/AddSchedule";
+import EditSchedule from "./pages/Schedule/EditSchedule";
+import BookingList from "./pages/Booking/BookingList";
+
 
 function App() {
   return (
@@ -20,11 +24,14 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
          <Route path="/admin/AdminFerries"element={<AdminFerries />}/>
          <Route path="/admin/dashboard" element={<Dashboard />} />
-         <Route path="/admin/schedules/add" element={<AddSchedule />}/>
+         <Route path="/admin/ManageSchedule" element={<ManageSchedule />} />
+         <Route path="/admin/add-schedule" element={<AddSchedule />} />
+         <Route path="/admin/EditSchedule/:id" element={<EditSchedule />} />
          <Route path="/home" element={<Home />} />
          <Route path="/profile" element={<Profile />} />
          <Route path="/schedule" element={<Schedule />} />
           <Route path="/MyBookings" element={<MyBookings />} />
+          <Route path="/admin/BookingList" element={<BookingList />}/>
       </Routes>
     </BrowserRouter>
   );

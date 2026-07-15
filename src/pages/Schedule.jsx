@@ -1,192 +1,191 @@
-import { useState } from "react";
-import {
-  FaMapMarkerAlt,
-  FaCalendarAlt,
-  FaUsers,
-  FaShip,
-} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/API";
+import { FaSearch, FaMapMarkerAlt, FaClock, FaMoneyBillWave } from "react-icons/fa";
 
 export default function Schedule() {
-  const [ferries] = useState([
-    {
-      id: 1,
-      name: "MV Green Line",
-      from: "Dhaka",
-      to: "Barishal",
-      departure: "08:00 AM",
-      arrival: "12:00 PM",
-      seats: 45,
-      price: 25,
-      image:
-        "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=600",
-    },
-    {
-      id: 2,
-      name: "MV Padma Star",
-      from: "Dhaka",
-      to: "Barishal",
-      departure: "01:00 PM",
-      arrival: "05:00 PM",
-      seats: 30,
-      price: 22,
-      image:
-        "https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600",
-    },
-    {
-      id: 3,
-      name: "MV Meghna Express",
-      from: "Dhaka",
-      to: "Barishal",
-      departure: "06:00 PM",
-      arrival: "10:00 PM",
-      seats: 20,
-      price: 20,
-      image:
-        "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600",
-    },
-  ]);
+  const navigate = useNavigate();
+
+  const [schedules, setSchedules] = useState([]);
+  const [filteredSchedules, setFilteredSchedules] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetchSchedules();
+  }, []);
+
+  useEffect(() => {
+    const filtered = schedules.filter(
+      (schedule) =>
+        schedule.ferry_name
+          ?.toLowerCase()
+          .includes(search.toLowerCase()) ||
+        schedule.origin
+          ?.toLowerCase()
+          .includes(search.toLowerCase()) ||
+        schedule.destination
+          ?.toLowerCase()
+          .includes(search.toLowerCase())
+    );
+
+    setFilteredSchedules(filtered);
+  }, [search, schedules]);
+
+  const fetchSchedules = async () => {
+    try {
+     const res = await api.get("/schedules");
+      setSchedules(res.data);
+      setFilteredSchedules(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Unable to load schedules");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-24 px-5">
-      {/* Title */}
-      <div className="max-w-7xl mx-auto mb-10">
-        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+    <div className="min-h-screen bg-gray-100 py-10 px-6">
+
+      <div className="max-w-7xl mx-auto">
+
+        <h1 className="text-4xl font-bold text-center mb-3">
           Ferry Schedules
         </h1>
 
-        <p className="text-gray-500">
-          Search and book your ferry tickets
+        <p className="text-center text-gray-500 mb-8">
+          Book your ferry tickets quickly and easily.
         </p>
-      </div>
 
-      {/* Search Section */}
-      <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-6 mb-10">
-        <div className="grid md:grid-cols-4 gap-5">
-          {/* From */}
-          <div>
-            <label className="text-gray-600 text-sm">From</label>
+        {/* Search */}
 
-            <div className="flex items-center border rounded-lg p-3 mt-2">
-              <FaMapMarkerAlt className="text-blue-600 mr-3" />
-              <select className="w-full outline-none">
-                <option>Dhaka</option>
-                <option>Barishal</option>
-                <option>Chattogram</option>
-              </select>
-            </div>
-          </div>
+        <div className="relative mb-8">
 
-          {/* To */}
-          <div>
-            <label className="text-gray-600 text-sm">To</label>
+          <FaSearch className="absolute left-4 top-4 text-gray-400" />
 
-            <div className="flex items-center border rounded-lg p-3 mt-2">
-              <FaMapMarkerAlt className="text-blue-600 mr-3" />
-              <select className="w-full outline-none">
-                <option>Barishal</option>
-                <option>Dhaka</option>
-                <option>Chattogram</option>
-              </select>
-            </div>
-          </div>
+          <input
+            type="text"
+            placeholder="Search by Ferry, Origin or Destination..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full border rounded-lg py-3 pl-12 pr-4"
+          />
 
-          {/* Date */}
-          <div>
-            <label className="text-gray-600 text-sm">Date</label>
-
-            <div className="flex items-center border rounded-lg p-3 mt-2">
-              <FaCalendarAlt className="text-blue-600 mr-3" />
-              <input type="date" className="w-full outline-none" />
-            </div>
-          </div>
-
-          {/* Passenger */}
-          <div>
-            <label className="text-gray-600 text-sm">Passengers</label>
-
-            <div className="flex items-center border rounded-lg p-3 mt-2">
-              <FaUsers className="text-blue-600 mr-3" />
-              <select className="w-full outline-none">
-                <option>1 Passenger</option>
-                <option>2 Passengers</option>
-                <option>3 Passengers</option>
-                <option>4 Passengers</option>
-              </select>
-            </div>
-          </div>
         </div>
 
-        <button className="mt-6 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700">
-          Search Ferry
-        </button>
-      </div>
+        {/* Loading */}
 
-      {/* Ferry Cards */}
-      <div className="max-w-7xl mx-auto">
-        <div className="grid gap-6">
-          {ferries.map((ferry) => (
-            <div
-              key={ferry.id}
-              className="bg-white rounded-2xl shadow-lg p-5 flex flex-col lg:flex-row items-center gap-6"
-            >
-              {/* Image */}
-              <img
-                src={ferry.image}
-                alt={ferry.name}
-                className="w-60 h-36 rounded-xl object-cover"
-              />
+        {loading ? (
+          <div className="text-center text-xl font-semibold py-10">
+            Loading schedules...
+          </div>
+        ) : filteredSchedules.length === 0 ? (
+          <div className="text-center text-gray-600 text-xl py-10">
+            No schedules available.
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-              {/* Ferry Info */}
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold">{ferry.name}</h2>
+            {filteredSchedules.map((schedule) => (
 
-                <p className="text-gray-500 mt-2">
-                  {ferry.from} → {ferry.to}
-                </p>
+              <div
+                key={schedule.id}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition"
+              >
 
-                <div className="flex gap-8 mt-4">
-                  <div>
-                    <p className="text-gray-500 text-sm">Departure</p>
-                    <p className="font-bold text-lg">
-                      {ferry.departure}
+                <img
+                  src={
+                    schedule.image_url ||
+                    "https://via.placeholder.com/500x250?text=Ferry"
+                  }
+                  alt={schedule.ferry_name}
+                  className="w-full h-52 object-cover"
+                />
+
+                <div className="p-6">
+
+                  <h2 className="text-2xl font-bold text-blue-700 mb-3">
+                    {schedule.ferry_name}
+                  </h2>
+
+                  <div className="space-y-3">
+
+                    <p className="flex items-center gap-2">
+                      <FaMapMarkerAlt className="text-red-500" />
+                      <span>
+                        <strong>Route:</strong>{" "}
+                        {schedule.origin} → {schedule.destination}
+                      </span>
                     </p>
+
+                    <p className="flex items-center gap-2">
+                      <FaClock className="text-blue-500" />
+                      <span>
+                        <strong>Departure:</strong>{" "}
+                        {new Date(
+                          schedule.departure_time
+                        ).toLocaleString()}
+                      </span>
+                    </p>
+
+                    <p className="flex items-center gap-2">
+                      <FaClock className="text-green-500" />
+                      <span>
+                        <strong>Arrival:</strong>{" "}
+                        {new Date(
+                          schedule.arrival_time
+                        ).toLocaleString()}
+                      </span>
+                    </p>
+
+                    <p className="flex items-center gap-2">
+                      <FaMoneyBillWave className="text-yellow-500" />
+                      <span className="font-bold text-lg">
+                        ₹{schedule.base_price}
+                      </span>
+                    </p>
+
+                    <div className="pt-2">
+
+                      <span
+                        className={`px-3 py-1 rounded-full text-white ${
+                          schedule.status === "scheduled"
+                            ? "bg-green-500"
+                            : schedule.status === "delayed"
+                            ? "bg-yellow-500"
+                            : schedule.status === "cancelled"
+                            ? "bg-red-500"
+                            : "bg-gray-500"
+                        }`}
+                      >
+                        {schedule.status}
+                      </span>
+
+                    </div>
+
                   </div>
 
-                  <div>
-                    <p className="text-gray-500 text-sm">Arrival</p>
-                    <p className="font-bold text-lg">
-                      {ferry.arrival}
-                    </p>
-                  </div>
+                  <button
+                    onClick={() =>
+                      navigate(`/book/${schedule.id}`)
+                    }
+                    className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Book Now
+                  </button>
 
-                  <div>
-                    <p className="text-gray-500 text-sm">Seats</p>
-                    <p className="font-bold text-green-600">
-                      {ferry.seats} Available
-                    </p>
-                  </div>
                 </div>
+
               </div>
 
-              {/* Price */}
-              <div className="text-center">
-                <p className="text-3xl font-bold text-blue-600">
-                  ${ferry.price}
-                </p>
+            ))}
 
-                <p className="text-gray-500 mb-4">
-                  per passenger
-                </p>
+          </div>
+        )}
 
-                <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center gap-2">
-                  <FaShip />
-                  Book Now
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
+
     </div>
   );
 }

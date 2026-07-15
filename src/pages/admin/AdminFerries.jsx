@@ -1,186 +1,181 @@
-import { useEffect, useState } from "react";
-import { FaPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/API";
 
-export default function AdminFerries() {
-  const [schedules, setSchedules] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+export default function AddFerry() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchSchedules();
-  }, []);
+  const [loading, setLoading] = useState(false);
 
-  const fetchSchedules = async () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    passenger_capacity: "",
+    vehicle_capacity: "",
+    image_url: "",
+    amenities: "",
+    status: "active",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      const response = await api.get("/schedules");
-      setSchedules(response.data);
+      setLoading(true);
+
+      await api.post("/ferries", formData);
+
+      alert("Ferry added successfully!");
+
+      navigate("/admin/dashboard");
     } catch (error) {
       console.error(error);
-      alert("Failed to load schedules");
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to add ferry."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this schedule?")) return;
-
-    try {
-      await api.delete(`/schedules/${id}`);
-
-      setSchedules((prev) =>
-        prev.filter((schedule) => schedule.id !== id)
-      );
-
-      alert("Schedule deleted successfully");
-    } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || "Delete failed");
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-4xl font-bold">
-           Ferry management
-          </h1>
+    <div className="min-h-screen bg-gray-100 flex justify-center py-10">
+      <div className="bg-white shadow-xl rounded-2xl w-full max-w-3xl p-8">
 
-          <p className="text-gray-500 mt-2">
-            Create, update and manage ferry schedules
-          </p>
-        </div>
+        <h1 className="text-3xl font-bold mb-8">
+          Add New Ferry
+        </h1>
 
-        <button
-          onClick={() => navigate("/admin/schedules/add")}
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-blue-700 transition"
-        >
-          <FaPlus />
-          Add Schedule
-        </button>
-      </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
 
-      {/* Search */}
-      <div className="bg-white p-5 rounded-2xl shadow mb-6">
-        <div className="relative">
-          <FaSearch className="absolute left-4 top-4 text-gray-400" />
+          {/* Ferry Name */}
+          <div>
+            <label className="block mb-2 font-medium">
+              Ferry Name
+            </label>
 
-          <input
-            type="text"
-            placeholder="Search schedules..."
-            className="w-full border rounded-xl py-3 pl-12 pr-4 outline-none focus:border-blue-500"
-          />
-        </div>
-      </div>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full border rounded-lg p-3"
+              placeholder="Enter ferry name"
+            />
+          </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow overflow-x-auto">
-        <table className="w-full text-center">
-          <thead className="bg-blue-600 text-white">
-            <tr>
-              <th className="py-4">ID</th>
-              <th>Ferry ID</th>
-              <th>Origin</th>
-              <th>Destination</th>
-              <th>Departure</th>
-              <th>Arrival</th>
-              <th>Base Price</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          {/* Passenger Capacity */}
+          <div>
+            <label className="block mb-2 font-medium">
+              Passenger Capacity
+            </label>
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="9" className="py-10">
-                  Loading...
-                </td>
-              </tr>
-            ) : schedules.length === 0 ? (
-              <tr>
-                <td colSpan="9" className="py-10 text-gray-500">
-                  No schedules found
-                </td>
-              </tr>
-            ) : (
-              schedules.map((schedule) => (
-                <tr
-                  key={schedule.id}
-                  className="border-b hover:bg-gray-50"
-                >
-                  <td className="py-4">{schedule.id}</td>
+            <input
+              type="number"
+              name="passenger_capacity"
+              value={formData.passenger_capacity}
+              onChange={handleChange}
+              required
+              className="w-full border rounded-lg p-3"
+            />
+          </div>
 
-                  <td>{schedule.ferry_id}</td>
+          {/* Vehicle Capacity */}
+          <div>
+            <label className="block mb-2 font-medium">
+              Vehicle Capacity
+            </label>
 
-                  <td>{schedule.origin}</td>
+            <input
+              type="number"
+              name="vehicle_capacity"
+              value={formData.vehicle_capacity}
+              onChange={handleChange}
+              required
+              className="w-full border rounded-lg p-3"
+            />
+          </div>
 
-                  <td>{schedule.destination}</td>
+          {/* Image URL */}
+          <div>
+            <label className="block mb-2 font-medium">
+              Image URL
+            </label>
 
-                  <td>
-                    {new Date(
-                      schedule.departure_time
-                    ).toLocaleString()}
-                  </td>
+            <input
+              type="text"
+              name="image_url"
+              value={formData.image_url}
+              onChange={handleChange}
+              className="w-full border rounded-lg p-3"
+              placeholder="https://example.com/ferry.jpg"
+            />
+          </div>
 
-                  <td>
-                    {new Date(
-                      schedule.arrival_time
-                    ).toLocaleString()}
-                  </td>
+          {/* Amenities */}
+          <div>
+            <label className="block mb-2 font-medium">
+              Amenities
+            </label>
 
-                  <td>₹ {schedule.base_price}</td>
+            <textarea
+              name="amenities"
+              value={formData.amenities}
+              onChange={handleChange}
+              rows="4"
+              className="w-full border rounded-lg p-3"
+              placeholder="WiFi, AC, Cafeteria, Parking..."
+            />
+          </div>
 
-                  <td>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm text-white
-                      ${
-                        schedule.status === "scheduled"
-                          ? "bg-green-500"
-                          : schedule.status === "delayed"
-                          ? "bg-yellow-500"
-                          : schedule.status === "cancelled"
-                          ? "bg-red-500"
-                          : "bg-blue-500"
-                      }`}
-                    >
-                      {schedule.status}
-                    </span>
-                  </td>
+          {/* Status */}
+          <div>
+            <label className="block mb-2 font-medium">
+              Status
+            </label>
 
-                  <td>
-                    <div className="flex justify-center gap-3">
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/admin/schedules/edit/${schedule.id}`
-                          )
-                        }
-                        className="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600"
-                      >
-                        <FaEdit />
-                      </button>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full border rounded-lg p-3"
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="maintenance">Maintenance</option>
+            </select>
+          </div>
 
-                      <button
-                        onClick={() =>
-                          handleDelete(schedule.id)
-                        }
-                        className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+          {/* Buttons */}
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+            >
+              {loading ? "Saving..." : "Add Ferry"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/admin/ferries")}
+              className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+          </div>
+
+        </form>
+
       </div>
     </div>
   );

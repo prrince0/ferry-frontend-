@@ -15,6 +15,8 @@ export default function AddSchedule() {
     departure_time: "",
     arrival_time: "",
     base_price: "",
+    available_passenger_seats: "",
+    available_vehicle_slots :"",
     status: "scheduled",
   });
 
@@ -56,6 +58,8 @@ export default function AddSchedule() {
         departure_time: "",
         arrival_time: "",
         base_price: "",
+        available_passenger_seats: "",
+        available_vehicle_slots: "",
         status: "scheduled",
       });
 
@@ -194,6 +198,34 @@ export default function AddSchedule() {
               type="number"
               name="base_price"
               value={formData.base_price}
+              onChange={handleChange}
+              className="w-full border rounded-lg p-3"
+              required
+            />
+          </div>
+           <div>
+            <label className="font-semibold block mb-2">
+              Available Seat
+            </label>
+
+            <input
+              type="number"
+              name="available_passenger_seats"
+              value={formData.available_passenger_seats}
+              onChange={handleChange}
+              className="w-full border rounded-lg p-3"
+              required
+            />
+          </div>
+           <div>
+            <label className="font-semibold block mb-2">
+             Vehicle Slot
+            </label>
+
+            <input
+              type="number"
+              name="available_vehicle_slots"
+              value={formData. available_vehicle_slots}
               onChange={handleChange}
               className="w-full border rounded-lg p-3"
               required

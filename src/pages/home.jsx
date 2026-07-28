@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/API";
+
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import HeroSlider from "../components/common/HeroSlider";
@@ -8,9 +12,41 @@ import {
   FaShieldAlt,
   FaCar,
   FaMapMarkerAlt,
+  FaSearch,
 } from "react-icons/fa";
 
 export default function Home() {
+
+  const navigate = useNavigate();
+
+  const [departure, setDeparture] = useState("");
+  const [destination, setDestination] = useState("");
+  const [travelDate, setTravelDate] = useState("");
+  const [passengers, setPassengers] = useState(1);
+
+  const handleSearch = async () => {
+    try {
+
+      const res = await api.get("/search/search", {
+       params: {
+       origin: departure,
+       destination,
+       date: travelDate,
+      },
+  });
+
+      navigate("/schedule", {
+        state: {
+          schedules: res.data,
+        },
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert("No schedules found");
+    }
+  };
+
   const features = [
     {
       icon: <FaShip className="text-4xl text-blue-600" />,
@@ -56,40 +92,52 @@ export default function Home() {
     <>
       <Navbar />
 
-      {/* Hero Section */}
       <HeroSlider />
 
-      {/* Search Box */}
       <section className="-mt-20 relative z-20 px-6">
-        <div className="max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl p-8 grid md:grid-cols-5 gap-4">
-          <input
-            type="text"
-            placeholder="Departure"
-            className="border p-4 rounded-lg"
-          />
+  <div className="max-w-5xl mx-auto bg-white shadow-2xl rounded-2xl p-8">
 
-          <input
-            type="text"
-            placeholder="Destination"
-            className="border p-4 rounded-lg"
-          />
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
 
-          <input
-            type="date"
-            className="border p-4 rounded-lg"
-          />
+      {/* Departure */}
+      <input
+        type="text"
+        placeholder="Departure"
+        value={departure}
+        onChange={(e) => setDeparture(e.target.value)}
+        className="w-full border border-gray-300 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
 
-          <input
-            type="number"
-            placeholder="Passengers"
-            className="border p-4 rounded-lg"
-          />
+      {/* Destination */}
+      <input
+        type="text"
+        placeholder="Destination"
+        value={destination}
+        onChange={(e) => setDestination(e.target.value)}
+        className="w-full border border-gray-300 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
 
-          <button className="bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-            Search
-          </button>
-        </div>
-      </section>
+      {/* Date */}
+      <input
+        type="date"
+        value={travelDate}
+        onChange={(e) => setTravelDate(e.target.value)}
+        className="w-full border border-gray-300 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+
+      {/* Search Button */}
+      <button
+        onClick={handleSearch}
+        className="w-full bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition flex justify-center items-center gap-2 text-lg font-semibold"
+      >
+        <FaSearch />
+        Search
+      </button>
+
+    </div>
+
+  </div>
+</section>
 
       {/* Features */}
       <section className="py-24 bg-gray-50">
@@ -153,7 +201,10 @@ export default function Home() {
                     Duration: {route.duration}
                   </p>
 
-                  <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                  <button
+                    onClick={() => navigate("/schedule")}
+                    className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
+                  >
                     View Schedule
                   </button>
                 </div>
@@ -175,12 +226,6 @@ export default function Home() {
             <h2 className="text-5xl font-bold">100+</h2>
             <p className="mt-3 text-lg">Routes</p>
           </div>
-
-          <div>
-            <h2 className="text-5xl font-bold">25K+</h2>
-            <p className="mt-3 text-lg">Passengers</p>
-          </div>
-
           <div>
             <h2 className="text-5xl font-bold">99%</h2>
             <p className="mt-3 text-lg">On Time Arrival</p>

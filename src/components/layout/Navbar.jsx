@@ -7,7 +7,8 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-md">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+     
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
         {/* Logo */}
         <Link
@@ -19,37 +20,18 @@ export default function Navbar() {
         </Link>
 
         {/* Menu */}
-        <div className="hidden md:flex items-center gap-8 font-medium">
-          <Link to="/" className="hover:text-blue-600 transition">
-            Home
-          </Link>
+        <div className="hidden md:flex items-center gap-8 font-medium  ml-auto">
 
           <Link to="/schedule" className="hover:text-blue-600 transition">
-            Schedule
+            Schedules
           </Link>
 
           <Link to="/MyBookings" className="hover:text-blue-600 transition">
-            Book Ticket
+           My Bookings
           </Link>
-
-          <Link to="/about" className="hover:text-blue-600 transition">
-            About
-          </Link>
-
-          <Link to="/contact" className="hover:text-blue-600 transition">
-            Contact
-          </Link>
-
           {/* Show only when logged in */}
           {token && (
             <>
-              <Link
-                to="/MyBookings"
-                className="hover:text-blue-600 transition"
-              >
-                My Bookings
-              </Link>
-
               <Link
                 to="/profile"
                 className="hover:text-blue-600 transition"

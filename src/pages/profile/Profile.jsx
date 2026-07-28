@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/API";
 import {
   FaUser,
   FaEnvelope,
@@ -16,35 +18,58 @@ import {
 export default function Profile() {
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const res = await api.get("/users/profile");
+
+      setUser(res.data);
+    } catch (err) {
+      console.error(err);
+
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    navigate("/login");};
-  const user = {
-    name: "Kumar",
-    email: "kumar@example.com",
-    phone: "+91 9876543210",
-    address: "Mumbai, India",
-    recentBookings: 12,
-    completedTrips: 8,
-    upcomingTrips: 4,
+    navigate("/login");
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-2xl font-semibold">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 pt-28 pb-10 px-5">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
 
-        {/* Left Side Card */}
+        {/* Left Card */}
         <div className="bg-white rounded-3xl shadow-lg p-8 text-center h-fit">
+
           <img
-            src="https://ui-avatars.com/api/?name=Kumar&background=2563eb&color=fff&size=200"
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+              user.full_name
+            )}&background=2563eb&color=fff&size=200`}
             alt="Profile"
             className="w-36 h-36 rounded-full mx-auto border-4 border-blue-500 mb-5"
           />
 
           <h2 className="text-3xl font-bold text-gray-800">
-            {user.name}
+            {user.full_name}
           </h2>
 
           <p className="text-gray-500 mt-2">
@@ -56,10 +81,12 @@ export default function Profile() {
             Edit Profile
           </button>
 
-          {/* Menu */}
           <div className="mt-8 space-y-4">
 
-            <button className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-100 hover:bg-blue-50 hover:text-blue-600 transition">
+            <button
+              onClick={() => navigate("/my-bookings")}
+              className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-100 hover:bg-blue-50 hover:text-blue-600 transition"
+            >
               <FaTicketAlt />
               My Bookings
             </button>
@@ -74,7 +101,10 @@ export default function Profile() {
               Change Password
             </button>
 
-            <button className="w-full flex items-center gap-3 p-4 rounded-xl bg-red-500 text-white hover:bg-red-600 transition" onClick={handleLogout}>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 p-4 rounded-xl bg-red-500 text-white hover:bg-red-600 transition"
+            >
               <FaSignOutAlt />
               Logout
             </button>
@@ -85,9 +115,10 @@ export default function Profile() {
         {/* Right Side */}
         <div className="lg:col-span-2 space-y-8">
 
-          {/* Personal Information */}
+          {/* Personal Info */}
           <div className="bg-white rounded-3xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold mb-8 text-gray-800">
+
+            <h2 className="text-2xl font-bold mb-8">
               Personal Information
             </h2>
 
@@ -99,8 +130,13 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <p className="text-gray-500 text-sm">Full Name</p>
-                  <p className="font-semibold text-lg">{user.name}</p>
+                  <p className="text-gray-500 text-sm">
+                    Full Name
+                  </p>
+
+                  <p className="font-semibold text-lg">
+                    {user.full_name}
+                  </p>
                 </div>
               </div>
 
@@ -110,8 +146,13 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <p className="text-gray-500 text-sm">Email</p>
-                  <p className="font-semibold text-lg">{user.email}</p>
+                  <p className="text-gray-500 text-sm">
+                    Email
+                  </p>
+
+                  <p className="font-semibold text-lg">
+                    {user.email}
+                  </p>
                 </div>
               </div>
 
@@ -121,8 +162,13 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <p className="text-gray-500 text-sm">Phone</p>
-                  <p className="font-semibold text-lg">{user.phone}</p>
+                  <p className="text-gray-500 text-sm">
+                    Phone
+                  </p>
+
+                  <p className="font-semibold text-lg">
+                    {user.phone || "Not Added"}
+                  </p>
                 </div>
               </div>
 
@@ -132,8 +178,13 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <p className="text-gray-500 text-sm">Address</p>
-                  <p className="font-semibold text-lg">{user.address}</p>
+                  <p className="text-gray-500 text-sm">
+                    Address
+                  </p>
+
+                  <p className="font-semibold text-lg">
+                    {user.address || "Not Added"}
+                  </p>
                 </div>
               </div>
 
@@ -143,49 +194,56 @@ export default function Profile() {
           {/* Statistics */}
           <div className="grid md:grid-cols-3 gap-6">
 
-            <div className="bg-white rounded-3xl shadow-lg p-8 text-center hover:shadow-xl transition">
+            <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
+
               <div className="bg-blue-100 w-20 h-20 rounded-full flex justify-center items-center mx-auto mb-5">
                 <FaTicketAlt className="text-blue-600 text-4xl" />
               </div>
 
-              <h2 className="text-4xl font-bold text-gray-800">
-                {user.recentBookings}
+              <h2 className="text-4xl font-bold">
+                0
               </h2>
 
               <p className="text-gray-500 mt-3">
-                Recent Bookings
+                Total Bookings
               </p>
+
             </div>
 
-            <div className="bg-white rounded-3xl shadow-lg p-8 text-center hover:shadow-xl transition">
+            <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
+
               <div className="bg-green-100 w-20 h-20 rounded-full flex justify-center items-center mx-auto mb-5">
                 <FaShip className="text-green-600 text-4xl" />
               </div>
 
-              <h2 className="text-4xl font-bold text-gray-800">
-                {user.completedTrips}
+              <h2 className="text-4xl font-bold">
+                0
               </h2>
 
               <p className="text-gray-500 mt-3">
                 Completed Trips
               </p>
+
             </div>
 
-            <div className="bg-white rounded-3xl shadow-lg p-8 text-center hover:shadow-xl transition">
+            <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
+
               <div className="bg-orange-100 w-20 h-20 rounded-full flex justify-center items-center mx-auto mb-5">
                 <FaClock className="text-orange-600 text-4xl" />
               </div>
 
-              <h2 className="text-4xl font-bold text-gray-800">
-                {user.upcomingTrips}
+              <h2 className="text-4xl font-bold">
+                0
               </h2>
 
               <p className="text-gray-500 mt-3">
                 Upcoming Trips
               </p>
+
             </div>
 
           </div>
+
         </div>
 
       </div>

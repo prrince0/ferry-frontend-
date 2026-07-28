@@ -12,6 +12,7 @@ import ManageSchedule from "./pages/admin/ManageSchedule";
 import AddSchedule from "./pages/Schedule/AddSchedule";
 import EditSchedule from "./pages/Schedule/EditSchedule";
 import BookingList from "./pages/Booking/BookingList";
+import BookTicket from "./pages/Booking/BookTicket";
 
 
 function App() {
@@ -32,6 +33,8 @@ function App() {
          <Route path="/schedule" element={<Schedule />} />
           <Route path="/MyBookings" element={<MyBookings />} />
           <Route path="/admin/BookingList" element={<BookingList />}/>
+          <Route path="/book/:scheduleId" element={<BookTicket />}/>
+          <Route path="/my-bookings" element={<MyBookings />} />
       </Routes>
     </BrowserRouter>
   );

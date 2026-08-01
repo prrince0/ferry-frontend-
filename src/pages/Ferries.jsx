@@ -1,183 +1,180 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useEffect, useState } from "react";
+import api from "../services/API";
+import { FaShip, FaUsers, FaCar, FaEdit, FaTrash } from "react-icons/fa";
 
-const scheduleData = [
-  { ferry: "MV Ganga", route: "Patna → Varanasi", departure: "06:00 AM", arrival: "09:30 AM", capacity: "180/200", status: "On time" },
-  { ferry: "MV Brahmaputra", route: "Guwahati → Dibrugarh", departure: "08:15 AM", arrival: "12:00 PM", capacity: "95/120", status: "On time" },
-  { ferry: "MV Kaveri", route: "Kochi → Lakshadweep", departure: "09:00 AM", arrival: "03:00 PM", capacity: "210/250", status: "Delayed" },
-  { ferry: "MV Yamuna", route: "Delhi → Allahabad", departure: "11:30 AM", arrival: "05:45 PM", capacity: "60/150", status: "Boarding" },
-  { ferry: "MV Godavari", route: "Rajamundry → Kakinada", departure: "02:00 PM", arrival: "04:00 PM", capacity: "0/180", status: "Boarding" },
-];
-
-const statusStyle = {
-  "On time": { background: "rgba(78,203,130,0.15)", color: "#4ecb82" },
-  "Delayed":  { background: "rgba(224,108,108,0.15)", color: "#e06c6c" },
-  "Boarding": { background: "rgba(77,184,212,0.15)", color: "#4db8d4" },
-};
-
-const navItems = [
-  { icon: "ti-layout-dashboard", label: "Dashboard", path: "/dashboard" },
-  { icon: "ti-ship",             label: "Ferries",   path: "/ferries" },
-  { icon: "ti-calendar",         label: "Schedules", path: "/schedules" },
-  { icon: "ti-ticket",           label: "Bookings",  path: "/my-bookings" },
-];
-
-export default function Dashboard() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [active, setActive] = useState("/dashboard");
-  const [today, setToday] = useState("");
+export default function Ferries() {
+  const [ferries, setFerries] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const d = new Date();
-    setToday(d.toLocaleDateString("en-IN", {
-      weekday: "long", day: "numeric", month: "long", year: "numeric",
-    }));
+    fetchFerries();
   }, []);
 
-  const handleNav = (path) => {
-    setActive(path);
-    navigate(path);
+  const fetchFerries = async () => {
+    try {
+      const res = await api.get("/ferries/my-ferries");
+      setFerries(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Unable to load ferries.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const deleteFerry = async (id) => {
+    const confirmDelete = window.confirm(
+      "Delete this ferry?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`/ferries/${id}`);
+
+      setFerries(ferries.filter((f) => f.id !== id));
+
+      alert("Ferry deleted successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Unable to delete ferry");
+    }
   };
 
-  const initials = user?.full_name
-    ? user.full_name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-    : "AD";
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-xl font-semibold">
+        Loading Ferries...
+      </div>
+    );
+  }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "sans-serif", background: "linear-gradient(180deg, #0a2a4a 0%, #1a5276 60%, #1a7a9a 100%)" }}>
+    <div className="min-h-screen bg-gray-100 py-24 px-6">
 
-      {/* Sidebar */}
-      <div style={{ width: 210, background: "rgba(0,0,0,0.28)", borderRight: "1px solid rgba(255,255,255,0.08)", display: "flex", flexDirection: "column", padding: "1.25rem 0", minHeight: "100vh" }}>
+      <div className="max-w-7xl mx-auto">
 
-        {/* Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 1rem 1.5rem" }}>
-          <div style={{ width: 34, height: 34, background: "rgba(255,255,255,0.15)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⚓</div>
-          <div>
-            <div style={{ color: "#fff", fontSize: 14, fontWeight: 500 }}>FerryOps</div>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>Operations System</div>
-          </div>
+        <div className="flex justify-between items-center mb-10">
+
+          <h1 className="text-4xl font-bold">
+            My Ferries
+          </h1>
         </div>
 
-        <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, letterSpacing: 1, padding: "0 1rem 6px", textTransform: "uppercase" }}>Main</div>
+        {ferries.length === 0 ? (
 
-        {navItems.map((item) => (
-          <div
-            key={item.path}
-            onClick={() => handleNav(item.path)}
-            style={{
-              display: "flex", alignItems: "center", gap: 10,
-              padding: "10px 1rem", cursor: "pointer", fontSize: 13,
-              color: active === item.path ? "#fff" : "rgba(255,255,255,0.5)",
-              background: active === item.path ? "rgba(255,255,255,0.1)" : "transparent",
-              borderRight: active === item.path ? "2px solid #4db8d4" : "2px solid transparent",
-              transition: "all 0.15s",
-            }}
-          >
-            <i className={`ti ${item.icon}`} style={{ fontSize: 17 }} aria-hidden="true" />
-            {item.label}
-          </div>
-        ))}
+          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
 
-        {/* Bottom nav */}
-        <div style={{ marginTop: "auto" }}>
-          <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, letterSpacing: 1, padding: "0 1rem 6px", textTransform: "uppercase" }}>Account</div>
-          <div
-            onClick={() => handleNav("/settings")}
-            style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 1rem", cursor: "pointer", fontSize: 13, color: "rgba(255,255,255,0.5)" }}
-          >
-            <i className="ti ti-settings" style={{ fontSize: 17 }} aria-hidden="true" />
-            Settings
-          </div>
-          <div
-            onClick={handleLogout}
-            style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 1rem", cursor: "pointer", fontSize: 13, color: "rgba(224,108,108,0.8)" }}
-          >
-            <i className="ti ti-logout" style={{ fontSize: 17 }} aria-hidden="true" />
-            Logout
-          </div>
-        </div>
-      </div>
+            <FaShip className="text-6xl mx-auto text-gray-300 mb-5"/>
 
-      {/* Main content */}
-      <div style={{ flex: 1, padding: "1.75rem 2rem", overflowY: "auto" }}>
+            <h2 className="text-2xl font-bold">
+              No Ferries Found
+            </h2>
 
-        {/* Topbar */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.75rem" }}>
-          <div>
-            <div style={{ color: "#fff", fontSize: 18, fontWeight: 500 }}>Dashboard</div>
-            <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginTop: 2 }}>{today}</div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20, padding: "5px 14px 5px 5px" }}>
-            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#1a7abd", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 500 }}>
-              {initials}
-            </div>
-            <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 13 }}>{user?.full_name || "Admin"}</span>
-          </div>
-        </div>
+            <p className="text-gray-500 mt-3">
+              Add your first ferry.
+            </p>
 
-        {/* Stat cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: "1.75rem" }}>
-          {[
-            { icon: "ti-ship",           label: "Active ferries", value: "12",    change: "↑ 2 since yesterday", up: true },
-            { icon: "ti-ticket",         label: "Total bookings", value: "1,482", change: "↑ 8% this week",      up: true },
-            { icon: "ti-clock",          label: "On-time rate",   value: "94%",   change: "↓ 2% vs last week",   up: false },
-            { icon: "ti-currency-rupee", label: "Revenue today",  value: "₹84K",  change: "↑ 12% vs yesterday",  up: true },
-          ].map((s) => (
-            <div key={s.label} style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "1rem 1.25rem" }}>
-              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginBottom: 6, display: "flex", alignItems: "center", gap: 5 }}>
-                <i className={`ti ${s.icon}`} style={{ fontSize: 14 }} aria-hidden="true" />
-                {s.label}
+          </div>
+
+        ) : (
+
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
+
+            {ferries.map((ferry) => (
+
+              <div
+                key={ferry.id}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition"
+              >
+
+            <img
+  src={
+    ferry.image_url
+      ? `http://localhost:3000${ferry.image_url}`
+      : "https://via.placeholder.com/500x250?text=Ferry"
+  }
+  alt={ferry.name}
+  className="w-full h-52 object-cover rounded-t-2xl"
+/>
+
+                <div className="p-6">
+
+                  <h2 className="text-2xl font-bold text-blue-700 mb-4">
+                    {ferry.name}
+                  </h2>
+
+                  <div className="space-y-3">
+
+                    <p className="flex items-center gap-2">
+
+                      <FaUsers className="text-green-600"/>
+
+                      Passenger Capacity :
+                      <strong>{ferry.passenger_capacity}</strong>
+
+                    </p>
+
+                    <p className="flex items-center gap-2">
+
+                      <FaCar className="text-orange-500"/>
+
+                      Vehicle Capacity :
+                      <strong>{ferry.vehicle_capacity}</strong>
+
+                    </p>
+                    <p>
+
+                      Status :
+                      <span
+  className={`ml-2 px-3 py-1 rounded-full text-white text-sm ${
+    ferry.status === "active"
+      ? "bg-green-500"
+      : ferry.status === "maintenance"
+      ? "bg-yellow-500"
+      : "bg-red-500"
+  }`}
+>
+  {ferry.status}
+</span>
+
+                    </p>
+
+                  </div>
+
+                  <div className="flex gap-3 mt-6">
+
+                    <button
+                      className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg flex justify-center items-center gap-2"
+                    >
+                      <FaEdit/>
+
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => deleteFerry(ferry.id)}
+                      className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg flex justify-center items-center gap-2"
+                    >
+                      <FaTrash/>
+
+                      Delete
+                    </button>
+
+                  </div>
+
+                </div>
+
               </div>
-              <div style={{ color: "#fff", fontSize: 24, fontWeight: 500 }}>{s.value}</div>
-              <div style={{ fontSize: 11, marginTop: 4, color: s.up ? "#4ecb82" : "#e06c6c" }}>{s.change}</div>
-            </div>
-          ))}
-        </div>
 
-        {/* Schedule table */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-          <div style={{ color: "#fff", fontSize: 14, fontWeight: 500 }}>Ferry schedule</div>
-          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>Today's trips</div>
-        </div>
+            ))}
 
-        <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, overflow: "hidden" }}>
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 600 }}>
-              <thead>
-                <tr style={{ background: "rgba(255,255,255,0.06)" }}>
-                  {["Ferry", "Route", "Departure", "Arrival", "Capacity", "Status"].map((h) => (
-                    <th key={h} style={{ color: "rgba(255,255,255,0.4)", fontWeight: 500, padding: "11px 16px", textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {scheduleData.map((row, i) => (
-                  <tr key={i} style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                    <td style={{ color: "#fff", padding: "11px 16px", fontWeight: 500, whiteSpace: "nowrap" }}>{row.ferry}</td>
-                    <td style={{ color: "rgba(255,255,255,0.7)", padding: "11px 16px", whiteSpace: "nowrap" }}>{row.route}</td>
-                    <td style={{ color: "rgba(255,255,255,0.7)", padding: "11px 16px", whiteSpace: "nowrap" }}>{row.departure}</td>
-                    <td style={{ color: "rgba(255,255,255,0.7)", padding: "11px 16px", whiteSpace: "nowrap" }}>{row.arrival}</td>
-                    <td style={{ color: "rgba(255,255,255,0.7)", padding: "11px 16px", whiteSpace: "nowrap" }}>{row.capacity}</td>
-                    <td style={{ padding: "11px 16px" }}>
-                      <span style={{ ...statusStyle[row.status], padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 500, whiteSpace: "nowrap" }}>
-                        {row.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
-        </div>
+
+        )}
 
       </div>
+
     </div>
   );
 }

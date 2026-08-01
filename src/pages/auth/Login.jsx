@@ -21,6 +21,7 @@ export default function Login() {
         email,
         password,
       });
+      console.log(response.data);
 
       localStorage.setItem("token", response.data.token);
 

@@ -11,6 +11,7 @@ import {
 import api from "../../services/API";
 
 export default function BookingList() {
+
   const navigate = useNavigate();
 
   const [bookings, setBookings] = useState([]);
@@ -23,68 +24,107 @@ export default function BookingList() {
   }, []);
 
   useEffect(() => {
-    setFilteredBookings(
-      bookings.filter(
-        (booking) =>
-          booking.passenger_name
-            ?.toLowerCase()
-            .includes(search.toLowerCase()) ||
-          booking.ferry_name
-            ?.toLowerCase()
-            .includes(search.toLowerCase()) ||
-          booking.origin
-            ?.toLowerCase()
-            .includes(search.toLowerCase()) ||
-          booking.destination
-            ?.toLowerCase()
-            .includes(search.toLowerCase())
-      )
+    const filtered = bookings.filter((booking) =>
+
+      booking.passenger_name
+        ?.toLowerCase()
+        .includes(search.toLowerCase()) ||
+
+      booking.email
+        ?.toLowerCase()
+        .includes(search.toLowerCase()) ||
+
+      booking.ferry_name
+        ?.toLowerCase()
+        .includes(search.toLowerCase()) ||
+
+      booking.origin
+        ?.toLowerCase()
+        .includes(search.toLowerCase()) ||
+
+      booking.destination
+        ?.toLowerCase()
+        .includes(search.toLowerCase())
+
     );
+
+    setFilteredBookings(filtered);
+
   }, [search, bookings]);
 
   const fetchBookings = async () => {
+
     try {
-      const res = await api.get("/bookings");
+
+      const res = await api.get("/bookings/admin");
       setBookings(res.data);
       setFilteredBookings(res.data);
+
     } catch (err) {
+
       console.error(err);
-      alert("Unable to load bookings");
+      alert("Unable to load bookings.");
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
   const cancelBooking = async (id) => {
-    if (!window.confirm("Cancel this booking?")) return;
+
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this booking?"
+    );
+
+    if (!confirmCancel) return;
 
     try {
+
       await api.put(`/bookings/${id}/cancel`);
 
       fetchBookings();
 
-      alert("Booking cancelled successfully");
+      alert("Booking cancelled successfully.");
+
     } catch (err) {
+
       console.error(err);
 
       alert(
         err.response?.data?.message ||
-          "Unable to cancel booking"
+        "Unable to cancel booking."
       );
+
     }
+
   };
 
   const totalRevenue = bookings.reduce(
-    (sum, booking) => sum + Number(booking.total_amount || 0),
+    (sum, booking) =>
+      sum + Number(booking.total_price || 0),
     0
   );
 
-  const cancelled = bookings.filter(
+  const confirmedBookings = bookings.filter(
+    (booking) => booking.booking_status === "confirmed"
+  ).length;
+
+  const waitingBookings = bookings.filter(
+    (booking) => booking.booking_status === "waiting"
+  ).length;
+
+  const cancelledBookings = bookings.filter(
     (booking) => booking.booking_status === "cancelled"
   ).length;
 
   return (
+
     <div className="min-h-screen bg-gray-100 p-8">
+
+      {/* Header */}
 
       <div className="flex justify-between items-center mb-8">
 
@@ -95,7 +135,7 @@ export default function BookingList() {
           </h1>
 
           <p className="text-gray-500 mt-2">
-            View and manage passenger bookings.
+            View all passenger bookings for your ferries.
           </p>
 
         </div>
@@ -104,13 +144,13 @@ export default function BookingList() {
 
       {/* Statistics */}
 
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-6 mb-8">
 
         <div className="bg-white rounded-xl shadow p-6 flex items-center gap-4">
 
           <FaTicketAlt
-            className="text-blue-600"
             size={35}
+            className="text-blue-600"
           />
 
           <div>
@@ -128,8 +168,8 @@ export default function BookingList() {
         <div className="bg-white rounded-xl shadow p-6 flex items-center gap-4">
 
           <FaMoneyBillWave
-            className="text-green-600"
             size={35}
+            className="text-green-600"
           />
 
           <div>
@@ -146,17 +186,17 @@ export default function BookingList() {
 
         <div className="bg-white rounded-xl shadow p-6 flex items-center gap-4">
 
-          <FaTimesCircle
-            className="text-red-600"
+          <FaUsers
             size={35}
+            className="text-green-600"
           />
 
           <div>
 
-            <p>Cancelled</p>
+            <p>Confirmed</p>
 
             <h2 className="text-3xl font-bold">
-              {cancelled}
+              {confirmedBookings}
             </h2>
 
           </div>
@@ -165,17 +205,17 @@ export default function BookingList() {
 
         <div className="bg-white rounded-xl shadow p-6 flex items-center gap-4">
 
-          <FaUsers
-            className="text-purple-600"
+          <FaTimesCircle
             size={35}
+            className="text-red-600"
           />
 
           <div>
 
-            <p>Passengers</p>
+            <p>Cancelled</p>
 
             <h2 className="text-3xl font-bold">
-              {bookings.length}
+              {cancelledBookings}
             </h2>
 
           </div>
@@ -186,17 +226,21 @@ export default function BookingList() {
 
       {/* Search */}
 
-      <div className="bg-white rounded-xl shadow p-5 mb-6">
+      <div className="bg-white rounded-xl shadow p-5 mb-8">
 
         <div className="relative">
 
-          <FaSearch className="absolute left-4 top-4 text-gray-400" />
+          <FaSearch
+            className="absolute left-4 top-4 text-gray-400"
+          />
 
           <input
             type="text"
-            placeholder="Search Passenger, Ferry or Route..."
+            placeholder="Search by Passenger, Email, Ferry or Route..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
             className="w-full border rounded-lg py-3 pl-12 pr-4"
           />
 
@@ -204,9 +248,8 @@ export default function BookingList() {
 
       </div>
 
-      {/* Table */}
-
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      {/* Booking Table Starts Here */}
+            <div className="bg-white rounded-xl shadow overflow-x-auto">
 
         <table className="w-full">
 
@@ -214,15 +257,29 @@ export default function BookingList() {
 
             <tr>
 
-              <th className="py-4">ID</th>
-              <th>Passenger</th>
-              <th>Ferry</th>
-              <th>Route</th>
-              <th>Departure</th>
-              <th>Seats</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th className="py-4 px-3">ID</th>
+
+              <th className="px-3">Passenger</th>
+
+              <th className="px-3">Email</th>
+
+              <th className="px-3">Ferry</th>
+
+              <th className="px-3">Route</th>
+
+              <th className="px-3">Departure</th>
+
+              <th className="px-3">Arrival</th>
+
+              <th className="px-3">Passengers</th>
+
+              <th className="px-3">Vehicles</th>
+
+              <th className="px-3">Amount</th>
+
+              <th className="px-3">Status</th>
+
+              <th className="px-3">Action</th>
 
             </tr>
 
@@ -235,8 +292,8 @@ export default function BookingList() {
               <tr>
 
                 <td
-                  colSpan="9"
-                  className="text-center py-10"
+                  colSpan="12"
+                  className="text-center py-10 text-lg"
                 >
                   Loading...
                 </td>
@@ -248,8 +305,8 @@ export default function BookingList() {
               <tr>
 
                 <td
-                  colSpan="9"
-                  className="text-center py-10"
+                  colSpan="12"
+                  className="text-center py-10 text-lg"
                 >
                   No Bookings Found
                 </td>
@@ -262,60 +319,96 @@ export default function BookingList() {
 
                 <tr
                   key={booking.id}
-                  className="border-b hover:bg-gray-50"
+                  className="border-b hover:bg-gray-50 transition"
                 >
 
                   <td className="text-center py-4">
+
                     {booking.id}
+
                   </td>
 
-                  <td className="text-center">
+                  <td className="text-center font-semibold">
+
                     {booking.passenger_name}
+
                   </td>
 
                   <td className="text-center">
+
+                    {booking.email}
+
+                  </td>
+
+                  <td className="text-center text-blue-700 font-semibold">
+
                     {booking.ferry_name}
+
                   </td>
 
                   <td className="text-center">
+
                     {booking.origin} → {booking.destination}
+
                   </td>
 
                   <td className="text-center">
+
                     {new Date(
                       booking.departure_time
                     ).toLocaleString()}
+
                   </td>
 
                   <td className="text-center">
-                    {booking.seats}
+
+                    {new Date(
+                      booking.arrival_time
+                    ).toLocaleString()}
+
                   </td>
 
                   <td className="text-center">
-                    ₹{booking.total_amount}
+
+                    {booking.passenger_seats}
+
+                  </td>
+
+                  <td className="text-center">
+
+                    {booking.vehicle_slots}
+
+                  </td>
+
+                  <td className="text-center font-bold text-green-700">
+
+                    ₹{booking.total_price}
+
                   </td>
 
                   <td className="text-center">
 
                     <span
-                      className={`px-3 py-1 rounded-full text-white ${
-                        booking.booking_status ===
-                        "confirmed"
+                      className={`px-3 py-1 rounded-full text-white text-sm font-semibold
+
+                      ${
+                        booking.booking_status === "confirmed"
                           ? "bg-green-500"
-                          : booking.booking_status ===
-                            "cancelled"
-                          ? "bg-red-500"
-                          : "bg-yellow-500"
+                          : booking.booking_status === "waiting"
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
                       }`}
                     >
+
                       {booking.booking_status}
+
                     </span>
 
                   </td>
 
                   <td>
 
-                    <div className="flex justify-center gap-3">
+                    <div className="flex justify-center gap-2">
 
                       <button
                         onClick={() =>
@@ -323,19 +416,28 @@ export default function BookingList() {
                             `/admin/bookings/${booking.id}`
                           )
                         }
-                        className="bg-blue-500 text-white p-2 rounded-lg"
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition"
                       >
+
                         <FaEye />
+
                       </button>
 
-                      <button
-                        onClick={() =>
-                          cancelBooking(booking.id)
-                        }
-                        className="bg-red-500 text-white p-2 rounded-lg"
-                      >
-                        <FaTimesCircle />
-                      </button>
+                      {booking.booking_status !==
+                        "cancelled" && (
+
+                        <button
+                          onClick={() =>
+                            cancelBooking(booking.id)
+                          }
+                          className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition"
+                        >
+
+                          <FaTimesCircle />
+
+                        </button>
+
+                      )}
 
                     </div>
 
@@ -354,5 +456,7 @@ export default function BookingList() {
       </div>
 
     </div>
+
   );
+
 }

@@ -47,6 +47,7 @@ export default function Schedule() {
   const fetchSchedules = async () => {
     try {
       const res = await api.get("/schedules");
+      console.log(res.data);
       setSchedules(res.data);
       setFilteredSchedules(res.data);
     } catch (err) {
@@ -98,12 +99,13 @@ export default function Schedule() {
                 className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300"
               >
                 <img
-                  src={
-                    schedule.image_url ||
-                    "https://via.placeholder.com/500x250?text=Ferry"
+               src={
+                 schedule.image_url
+                ? `http://localhost:3000${schedule.image_url}`
+                  : "https://via.placeholder.com/500x250?text=Ferry"
                   }
                   alt={schedule.ferry_name}
-                  className="w-full h-52 object-cover"
+                  className="w-full h-52 object-cover rounded-t-2xl"
                 />
 
                 <div className="p-6">

@@ -13,6 +13,8 @@ import AddSchedule from "./pages/Schedule/AddSchedule";
 import EditSchedule from "./pages/Schedule/EditSchedule";
 import BookingList from "./pages/Booking/BookingList";
 import BookTicket from "./pages/Booking/BookTicket";
+import Ferries from "./pages/Ferries";
+import AdminRoute from "./components/layout/AdminRoute";
 
 
 function App() {
@@ -23,18 +25,28 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-         <Route path="/admin/AdminFerries"element={<AdminFerries />}/>
-         <Route path="/admin/dashboard" element={<Dashboard />} />
-         <Route path="/admin/ManageSchedule" element={<ManageSchedule />} />
-         <Route path="/admin/add-schedule" element={<AddSchedule />} />
-         <Route path="/admin/EditSchedule/:id" element={<EditSchedule />} />
+         
+         
+         
+      
          <Route path="/home" element={<Home />} />
          <Route path="/profile" element={<Profile />} />
          <Route path="/schedule" element={<Schedule />} />
           <Route path="/MyBookings" element={<MyBookings />} />
-          <Route path="/admin/BookingList" element={<BookingList />}/>
+          
           <Route path="/book/:scheduleId" element={<BookTicket />}/>
           <Route path="/my-bookings" element={<MyBookings />} />
+         
+
+          <Route element={<AdminRoute />}>
+          <Route path="/admin/AdminFerries"element={<AdminFerries />}/>
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+           <Route path="/admin/ManageSchedule" element={<ManageSchedule />} />
+            <Route path="/admin/add-schedule" element={<AddSchedule />} />
+          <Route path="/admin/EditSchedule/:id" element={<EditSchedule />} />
+            <Route path="/admin/BookingList" element={<BookingList />}/>
+             <Route path="/ferries" element={<Ferries />} />
+          </Route>
       </Routes>
     </BrowserRouter>
   );

@@ -53,6 +53,36 @@ export default function MyBookings() {
     );
   }
 
+
+  const handleCancelBooking = async (bookingId) => {
+  const confirmCancel = window.confirm(
+    "Are you sure you want to cancel this booking?"
+  );
+
+  if (!confirmCancel) return;
+
+  try {
+   await api.delete(`/bookings/${bookingId}`);
+
+    alert("Booking cancelled successfully.");
+      setBookings((prevBookings) =>
+      prevBookings.map((booking) =>
+        booking.id === bookingId
+          ? {
+              ...booking,
+              booking_status: "cancelled",
+            }
+          : booking
+      )
+    );
+    //loadBookings();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to cancel booking.");
+  }
+};
+
   return (
     <div className="min-h-screen bg-gray-100 pt-24 px-5">
       <div className="max-w-7xl mx-auto">
@@ -247,17 +277,15 @@ export default function MyBookings() {
                         View Ticket
 
                       </button>
-
-                      {booking.booking_status !== "cancelled" &&
-                        booking.booking_status !== "completed" && (
-
-                          <button className="border border-red-500 text-red-500 py-3 rounded-xl hover:bg-red-500 hover:text-white">
-
-                            Cancel Booking
-
-                          </button>
-
-                        )}
+{booking.booking_status === "confirmed" ||
+ booking.booking_status === "waiting" ? (
+  <button
+    onClick={() => handleCancelBooking(booking.id)}
+    className="border border-red-500 text-red-500 py-3 px-4 rounded-xl hover:bg-red-500 hover:text-white transition"
+  >
+    Cancel Booking
+  </button>
+) : null}
 
                     </div>
 

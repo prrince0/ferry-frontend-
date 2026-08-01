@@ -81,13 +81,14 @@ if (res.data.waitlisted) {
 
         <img
           src={
-            schedule.image_url ||
-            "https://via.placeholder.com/1000x400?text=Ferry"
-          }
-          alt={schedule.ferry_name}
-          className="w-full h-72 object-cover"
+                 schedule.image_url
+                ? `http://localhost:3000${schedule.image_url}`
+                  : "https://via.placeholder.com/500x250?text=Ferry"
+                  }
+                  alt={schedule.ferry_name}
+          className="w-full h-52 object-cover rounded-t-2xl"
         />
-
+      
         <div className="p-8">
 
           <h1 className="text-3xl font-bold text-blue-700">

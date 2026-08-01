@@ -6,15 +6,15 @@ export default function AddFerry() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(null);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    passenger_capacity: "",
-    vehicle_capacity: "",
-    image_url: "",
-    amenities: "",
-    status: "active",
-  });
+    const [formData, setFormData] = useState({
+  name: "",
+  passenger_capacity: "",
+  vehicle_capacity: "",
+  amenities: "",
+  status: "active",
+});
 
   const handleChange = (e) => {
     setFormData({
@@ -22,14 +22,28 @@ export default function AddFerry() {
       [e.target.name]: e.target.value,
     });
   };
-
+ const handleFileChange = (e) => {
+    setImage(e.target.files[0]);
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
 
-      await api.post("/ferries", formData);
+      const formDataWithImage = new FormData();
+      Object.keys(formData).forEach((key) => {
+        formDataWithImage.append(key, formData[key]);
+      });
+      if (image) {
+        formDataWithImage.append("image", image);
+      }
+
+      await api.post("/ferries", formDataWithImage, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       alert("Ferry added successfully!");
 
@@ -107,19 +121,18 @@ export default function AddFerry() {
 
           {/* Image URL */}
           <div>
-            <label className="block mb-2 font-medium">
-              Image URL
-            </label>
+          <label className="block mb-2 font-medium">
+          Ferry Image
+          </label>
 
-            <input
-              type="text"
-              name="image_url"
-              value={formData.image_url}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3"
-              placeholder="https://example.com/ferry.jpg"
-            />
-          </div>
+           <input
+           type="file"
+           name="image"
+            accept="image/*"
+           onChange={handleFileChange}
+            className="w-full border rounded-lg p-3"
+         />
+       </div>
 
           {/* Amenities */}
           <div>

@@ -26,7 +26,7 @@ export default function EditSchedule() {
 
   const loadFerries = async () => {
     try {
-      const res = await api.get("/ferries/my-ferries");
+      const res = await api.get("/api/ferries/my-ferries");
       setFerries(res.data);
     } catch (err) {
       console.error(err);
@@ -35,7 +35,7 @@ export default function EditSchedule() {
 
   const loadSchedule = async () => {
     try {
-      const res = await api.get(`/schedules/${id}`);
+      const res = await api.get(`/api/schedules/${id}`);
 
       const schedule = res.data;
 
@@ -68,7 +68,7 @@ export default function EditSchedule() {
     try {
       setLoading(true);
 
-      await api.put(`/schedules/${id}`, formData);
+      await api.put(`/api/schedules/${id}`, formData);
 
       alert("Schedule Updated Successfully");
 

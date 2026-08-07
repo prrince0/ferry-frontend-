@@ -26,7 +26,7 @@ export default function Profile() {
 
   const loadProfile = async () => {
     try {
-      const res = await api.get("/users/profile");
+      const res = await api.get("/api/users/profile");
 
       setUser(res.data);
     } catch (err) {

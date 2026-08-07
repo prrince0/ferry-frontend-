@@ -26,7 +26,7 @@ export default function AddSchedule() {
 
   const loadFerries = async () => {
     try {
-        const res = await api.get("/ferries/my-ferries");
+        const res = await api.get("/api/ferries/my-ferries");
       setFerries(res.data);
     } catch (err) {
       console.error(err);
@@ -47,7 +47,7 @@ export default function AddSchedule() {
     try {
       setLoading(true);
 
-      await api.post("/schedules", formData);
+      await api.post("/api/schedules", formData);
 
       alert("Schedule created successfully!");
 

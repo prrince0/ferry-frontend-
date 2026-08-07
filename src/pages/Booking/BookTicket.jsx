@@ -19,7 +19,7 @@ export default function BookingTicket() {
 
   const loadSchedule = async () => {
     try {
-      const res = await api.get(`/schedules/${scheduleId}`);
+      const res = await api.get(`/api/schedules/${scheduleId}`);
       setSchedule(res.data);
     } catch (err) {
       console.error(err);
@@ -36,7 +36,7 @@ export default function BookingTicket() {
   const handleBooking = async () => {
     try {
       setBooking(true);
-      const res = await api.post("/bookings", {
+      const res = await api.post("/api/bookings", {
        schedule_id: scheduleId,
        passenger_seats: passengerSeats,
        vehicle_slots: vehicleSlots
@@ -80,11 +80,11 @@ if (res.data.waitlisted) {
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
 
         <img
-          src={
-                 schedule.image_url
-                ? `http://localhost:3000${schedule.image_url}`
-                  : "https://via.placeholder.com/500x250?text=Ferry"
-                  }
+         src={
+  schedule.image_url
+    ? `${import.meta.env.VITE_API_URL}${schedule.image_url}`
+    : "https://via.placeholder.com/500x250?text=Ferry"
+}
                   alt={schedule.ferry_name}
           className="w-full h-52 object-cover rounded-t-2xl"
         />

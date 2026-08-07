@@ -14,7 +14,7 @@ export default function ManageSchedules() {
 
   const fetchSchedules = async () => {
     try {
-      const res = await api.get("/schedules");
+      const res = await api.get("/api/schedules");
       setSchedules(res.data);
     } catch (err) {
       console.log(err);
@@ -29,7 +29,7 @@ export default function ManageSchedules() {
   if (!confirmDelete) return;
 
   try {
-    await api.delete(`/schedules/${id}`);
+    await api.delete(`/api/schedules/${id}`);
     setSchedules(
       schedules.filter((schedule) => schedule.id !== id)
     );

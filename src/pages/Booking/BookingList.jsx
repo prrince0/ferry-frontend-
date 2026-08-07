@@ -56,7 +56,7 @@ export default function BookingList() {
 
     try {
 
-      const res = await api.get("/bookings/admin");
+      const res = await api.get("/api/bookings/admin");
       setBookings(res.data);
       setFilteredBookings(res.data);
 
@@ -83,7 +83,7 @@ export default function BookingList() {
 
     try {
 
-      await api.put(`/bookings/${id}/cancel`);
+      await api.put(`/api/bookings/${id}/cancel`);
 
       fetchBookings();
 

@@ -49,10 +49,10 @@ export default function Dashboard() {
   const loadCharts = async () => {
     try {
 
-      const trendRes = await api.get("/dashboard/bookingtrend");
-      const revenueRes = await api.get("/dashboard/revenueferry");
-      const statusRes = await api.get("/dashboard/bookingstatus");
-      const routeRes = await api.get("/dashboard/passengersroute");
+      const trendRes = await api.get("/api/dashboard/bookingtrend");
+      const revenueRes = await api.get("/api/dashboard/revenueferry");
+      const statusRes = await api.get("/api/dashboard/bookingstatus");
+      const routeRes = await api.get("/api/dashboard/passengersroute");
 
       setBookingTrend(trendRes.data);
       setRevenue(revenueRes.data);

@@ -39,7 +39,7 @@ export default function AddFerry() {
         formDataWithImage.append("image", image);
       }
 
-      await api.post("/ferries", formDataWithImage, {
+      await api.post("/api/ferries", formDataWithImage, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -27,7 +27,7 @@ export default function Home() {
   const handleSearch = async () => {
     try {
 
-      const res = await api.get("/search/search", {
+      const res = await api.get("/api/search/search", {    
        params: {
        origin: departure,
        destination,

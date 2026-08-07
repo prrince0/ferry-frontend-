@@ -12,7 +12,7 @@ export default function Ferries() {
 
   const fetchFerries = async () => {
     try {
-      const res = await api.get("/ferries/my-ferries");
+      const res = await api.get("/api/ferries/my-ferries");
       setFerries(res.data);
     } catch (err) {
       console.error(err);
@@ -89,11 +89,11 @@ export default function Ferries() {
               >
 
             <img
-  src={
-    ferry.image_url
-      ? `http://localhost:3000${ferry.image_url}`
-      : "https://via.placeholder.com/500x250?text=Ferry"
-  }
+ src={
+  ferry.image_url
+    ? `${import.meta.env.VITE_API_URL}${ferry.image_url}`
+    : "https://via.placeholder.com/500x250?text=Ferry"
+}
   alt={ferry.name}
   className="w-full h-52 object-cover rounded-t-2xl"
 />

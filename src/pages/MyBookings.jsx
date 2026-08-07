@@ -18,7 +18,7 @@ export default function MyBookings() {
 
   const loadBookings = async () => {
     try {
-      const res = await api.get("/bookings/my-bookings");
+      const res = await api.get("/api/bookings/my-bookings");
       console.log(res.data);
       setBookings(res.data);
     } catch (err) {

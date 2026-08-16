@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/API";
 import { FaShip, FaUsers, FaCar, FaEdit, FaTrash } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 export default function Ferries() {
   const [ferries, setFerries] = useState([]);
@@ -16,7 +17,8 @@ export default function Ferries() {
       setFerries(res.data);
     } catch (err) {
       console.error(err);
-      alert("Unable to load ferries.");
+      toast.error("Unable to load ferries.");
+      toast.error("Unable to load ferries.");
     } finally {
       setLoading(false);
     }
@@ -34,10 +36,10 @@ export default function Ferries() {
 
       setFerries(ferries.filter((f) => f.id !== id));
 
-      alert("Ferry deleted successfully");
+      toast.success("Ferry deleted successfully");
     } catch (err) {
       console.error(err);
-      alert("Unable to delete ferry");
+      toast.error("Unable to delete ferry");
     }
   };
 

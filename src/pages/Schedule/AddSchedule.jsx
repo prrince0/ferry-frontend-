@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/API";
-
+import toast from "react-hot-toast";
 export default function AddSchedule() {
   const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ export default function AddSchedule() {
       setFerries(res.data);
     } catch (err) {
       console.error(err);
-      alert("Unable to load your ferries.");
+      toast.error("Unable to load your ferries.");
     }
   };
 
@@ -49,7 +49,7 @@ export default function AddSchedule() {
 
       await api.post("/api/schedules", formData);
 
-      alert("Schedule created successfully!");
+      toast.success("Schedule created successfully!");
 
       setFormData({
         ferry_id: "",
@@ -67,7 +67,7 @@ export default function AddSchedule() {
     } catch (err) {
       console.error(err);
 
-      alert(
+      toast.error(
         err.response?.data?.message ||
           "Unable to create schedule."
       );

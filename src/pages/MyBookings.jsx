@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/API";
+import toast from "react-hot-toast";
 import {
   FaShip,
   FaMapMarkerAlt,
@@ -23,7 +24,7 @@ export default function MyBookings() {
       setBookings(res.data);
     } catch (err) {
       console.error(err);
-      alert("Failed to load bookings");
+      toast.error("Failed to load bookings");
     } finally {
       setLoading(false);
     }
@@ -64,7 +65,7 @@ export default function MyBookings() {
   try {
    await api.delete(`/bookings/${bookingId}`);
 
-    alert("Booking cancelled successfully.");
+    toast.success("Booking cancelled successfully.");
       setBookings((prevBookings) =>
       prevBookings.map((booking) =>
         booking.id === bookingId
@@ -79,7 +80,7 @@ export default function MyBookings() {
 
   } catch (err) {
     console.error(err);
-    alert("Failed to cancel booking.");
+    toast.error("Failed to cancel booking.");
   }
 };
 

@@ -21,7 +21,28 @@ import AdminRoute from "./components/layout/AdminRoute";
 function App() {
   return (
     <BrowserRouter>
-    <Toaster position="top-right" />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        toastOptions={{
+          duration: 1500,
+
+          success: {
+            duration: 1500,
+          },
+
+          error: {
+            duration: 3000,
+          },
+
+          style: {
+            borderRadius: "10px",
+            padding: "12px 16px",
+            fontSize: "14px",
+          },
+        }}
+      />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />

@@ -3,7 +3,7 @@ import { FaEnvelope, FaLock, FaShip } from "react-icons/fa";
 import { useNavigate,Link } from "react-router-dom";
 import api from "../../services/API";
 import bgImage from "../../assets/zhang-fengsheng-Vt7Z34h8lfo-unsplash.jpg";
-import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -55,7 +55,6 @@ export default function Login() {
         backgroundImage: `url(${bgImage})`,
       }}
     >
-      <Toaster />
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50"></div>
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/API";
+import toast from "react-hot-toast";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ export default function AdminLogin() {
       const token = response.data.token;
 
       if (user.role !== "admin") {
-        alert("Only admins can login here.");
+        toast.error("Only admins can login here.");
         return;
       }
 
@@ -30,7 +31,7 @@ export default function AdminLogin() {
 
       navigate("/admin/dashboard");
     } catch (error) {
-      alert(
+      toast.error(
         error.response?.data?.message || "Login failed"
       );
     }

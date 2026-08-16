@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/API";
+import toast from "react-hot-toast";
 import {
   FaSearch,
   FaMapMarkerAlt,
@@ -52,7 +53,7 @@ export default function Schedule() {
       setFilteredSchedules(res.data);
     } catch (err) {
       console.error(err);
-      alert("Unable to load schedules");
+      toast.error("Unable to load schedules");
     } finally {
       setLoading(false);
     }

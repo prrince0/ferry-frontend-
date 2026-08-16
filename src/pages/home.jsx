@@ -5,7 +5,7 @@ import api from "../services/API";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import HeroSlider from "../components/common/HeroSlider";
-
+import toast from "react-hot-toast";
 import {
   FaShip,
   FaClock,
@@ -43,7 +43,7 @@ export default function Home() {
 
     } catch (err) {
       console.error(err);
-      alert("No schedules found");
+      toast.error("No schedules found");
     }
   };
 

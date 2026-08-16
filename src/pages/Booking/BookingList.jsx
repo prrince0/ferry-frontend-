@@ -9,6 +9,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import api from "../../services/API";
+import toast from "react-hot-toast";
 
 export default function BookingList() {
 
@@ -63,7 +64,7 @@ export default function BookingList() {
     } catch (err) {
 
       console.error(err);
-      alert("Unable to load bookings.");
+      toast.error("Unable to load bookings.");
 
     } finally {
 
@@ -87,13 +88,13 @@ export default function BookingList() {
 
       fetchBookings();
 
-      alert("Booking cancelled successfully.");
+      toast.success("Booking cancelled successfully.");
 
     } catch (err) {
 
       console.error(err);
 
-      alert(
+      toast.error(
         err.response?.data?.message ||
         "Unable to cancel booking."
       );

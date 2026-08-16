@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/API";
+import toast from "react-hot-toast";
 
 export default function EditSchedule() {
   const { id } = useParams();
@@ -51,7 +52,7 @@ export default function EditSchedule() {
 
     } catch (err) {
       console.error(err);
-      alert("Unable to load schedule");
+      toast.error("Unable to load schedule");
     }
   };
 
@@ -70,14 +71,14 @@ export default function EditSchedule() {
 
       await api.put(`/api/schedules/${id}`, formData);
 
-      alert("Schedule Updated Successfully");
+      toast.success("Schedule Updated Successfully");
 
       navigate("/admin/ManageSchedule");
 
     } catch (err) {
       console.error(err);
 
-      alert(
+      toast.error(
         err.response?.data?.message ||
         "Unable to update schedule"
       );

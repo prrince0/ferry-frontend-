@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/API";
+import toast from "react-hot-toast";
 
 export default function BookingTicket() {
   const { scheduleId } = useParams();
@@ -23,7 +24,7 @@ export default function BookingTicket() {
       setSchedule(res.data);
     } catch (err) {
       console.error(err);
-      alert("Unable to load schedule");
+      toast.error("Unable to load schedule");
     } finally {
       setLoading(false);
     }
@@ -44,13 +45,13 @@ export default function BookingTicket() {
 
 if (res.data.waitlisted) {
 
-    alert(
+    toast.success(
         `Added to Waitlist!\n\nWaiting Number: WL${res.data.waitlist_number}`
     );
 
 } else {
 
-    alert("Booking Successful!");
+    toast.success("Booking Successful!");
 
 }
   navigate("/my-bookings");
@@ -58,7 +59,7 @@ if (res.data.waitlisted) {
     console.error(err);
     console.log(err.response?.data);
 
-    alert(
+    toast.error(
         err.response?.data?.message ||
         err.response?.data?.error ||
         "Booking Failed"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/API";
+import toast from "react-hot-toast";
 
 export default function AddFerry() {
   const navigate = useNavigate();
@@ -45,13 +46,13 @@ export default function AddFerry() {
         },
       });
 
-      alert("Ferry added successfully!");
+      toast.success("Ferry added successfully!");
 
       navigate("/admin/dashboard");
     } catch (error) {
       console.error(error);
 
-      alert(
+      toast.error(
         error.response?.data?.message ||
         "Failed to add ferry."
       );

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/API";
-import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ export default function Register() {
         password,
       });
 
-      alert("Registration Successful");
+      toast.success("Registration Successful");
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem(
@@ -37,7 +37,7 @@ export default function Register() {
 
       navigate("/login");
     } catch (error) {
-      alert(
+      toast.error(
         error.response?.data?.message ||
           "Registration failed"
       );
@@ -45,6 +45,7 @@ export default function Register() {
   };
 
   return (
+    
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-5">
       <form
         onSubmit={handleRegister}
